@@ -1,4 +1,6 @@
 import React from 'react';
+
+
 import {
   Card,
   CardHeader,
@@ -12,6 +14,7 @@ import {
 } from 'reactstrap';
 import api from 'lib/api';
 import { Post } from 'types';
+import QRCode from 'react-qr-code';
 
 interface State {
   name: string;
@@ -19,7 +22,10 @@ interface State {
   isPosting: boolean;
   pendingPost: null | Post;
   paymentRequest: null | string;
-  error: null | string;
+  back: string;
+  fore: string;
+  size: number;
+  error: null;
 }
 
 export default class PostForm extends React.Component<{}, State> {
@@ -29,11 +35,14 @@ export default class PostForm extends React.Component<{}, State> {
     isPosting: false,
     pendingPost: null,
     paymentRequest: null,
+    back: "#000000",
+    fore: "#ffffff",
+    size: 300,
     error: null,
   }
 
   render() {
-    const { name, content, isPosting, error, paymentRequest } = this.state;
+    const { name, content, isPosting, error, paymentRequest, back,fore, size } = this.state;
     const disabled = !content.length || !name.length || isPosting;
 
     let cardContent;
@@ -48,6 +57,15 @@ export default class PostForm extends React.Component<{}, State> {
               disabled
             />
           </FormGroup>
+          
+          <QRCode
+            value={paymentRequest}
+            title="lightning invoice QR"
+            bgColor={back}
+            fgColor={fore}
+            size={size === '' ? 0 : size}
+          />
+        
           <Button color="primary" block href={`lightning:${paymentRequest}`}>
             Open in Wallet
           </Button>
