@@ -1,6 +1,4 @@
 import React from 'react';
-
-
 import {
   Card,
   CardHeader,
@@ -57,14 +55,14 @@ export default class PostForm extends React.Component<{}, State> {
               disabled
             />
           </FormGroup>
-          
-          <QRCode
-            value={paymentRequest}
-            title="lightning invoice QR"
-            bgColor={back}
-            fgColor={fore}
-            size={size === '' ? 0 : size}
-          />
+          <FormGroup>
+            <QRCode
+              value={"http://www.johandegrieck.be"}
+              bgColor={back}
+              fgColor={fore}
+              size={size}
+            />
+          </FormGroup>
         
           <Button color="primary" block href={`lightning:${paymentRequest}`}>
             Open in Wallet
