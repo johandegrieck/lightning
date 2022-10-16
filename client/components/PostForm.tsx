@@ -33,8 +33,8 @@ export default class PostForm extends React.Component<{}, State> {
     isPosting: false,
     pendingPost: null,
     paymentRequest: null,
-    back: "#000000",
-    fore: "#ffffff",
+    back: "#ffffff",
+    fore: "#000000",
     size: 300,
     error: null,
   }
@@ -57,7 +57,7 @@ export default class PostForm extends React.Component<{}, State> {
           </FormGroup>
           <FormGroup>
             <QRCode
-              value={"http://www.johandegrieck.be"}
+              value={paymentRequest}
               bgColor={back}
               fgColor={fore}
               size={size}

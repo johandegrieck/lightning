@@ -30,6 +30,7 @@ interface State {
   isPosting: boolean;
   pendingPost: null | Post;
   searchResults:null;
+  songUri:string;
 }
 
 
@@ -52,8 +53,29 @@ export default class Spotify extends React.Component<{}, State> {
     isPosting: false,
     pendingPost: null,
     searchResults:null,
+    songUri:'spotify:track:2fV9z65hwYlvX8hYtbEQIZ',
   };
+  private setSongUri = (uri) => {
+    this.setState({songUri:uri});
+    console.log('uri was set with', uri);
+  }
 
+  private addToQueue = async (e) => {
+    console.log('adding to Queueu --------- ', window.localStorage.getItem("token"));
+    const {songUri}  = this.state;
+    const params = {
+        uri: 'spotify:track:03MOcbkkoNLjP0G91iODSB'
+    }
+    const headers = {Authorization: "Bearer BQAxWime1_dro60-QUe-h7zhTOuwrkzNfdKqJ2slS55EyQkmU0CcE56vkPSYGDwKaHIftcVUtmM8z9Zby1GRrYOUBBRonNh6qj3ajLPpKzeMEXufAXtgMeGdMO1SQ_hQ8WMelnzD18Kmjz2AgxqYtwkCGD1yAPi81jbjkZRuY_yJXWEO-ILUe4vWqU6IZL__46fjsQVmG77jyU73YaMzs4SVjxjKdcukZ25WbnB_aZKuQUoweG_4jAltLD7E6BoOyIM2uV9fgjMvyFds7eio_zM"}
+    
+    console.log("adding song to queue: ", songUri);
+    const {data} = await axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(params.uri), 
+        params,
+        {headers})
+
+    //this.setState({searchResults:data.tracks.items});
+    console.log("song added !!! ", data);
+}
 
   private searchArtists = async (e) => {
         const {artistName}  = this.state;
@@ -65,11 +87,11 @@ export default class Spotify extends React.Component<{}, State> {
             },
             params: {
                 q: artistName,
-                type: "artist"
+                type: "track"
             }
         })
 
-        this.setState({searchResults:data.artists.items});
+        this.setState({searchResults:data.tracks.items});
     }
 
   private handleChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -104,15 +126,15 @@ export default class Spotify extends React.Component<{}, State> {
 
     const logout = () => {
         token = "";
-        window.localStorage.removeItem("token")
+        window.localStorage.removeItem("token");
+        console.log("logout - value token",token);
     }
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
-        <Card key={p.id} className="mb-3">
-            <CardBody>
-            <CardText>{p.name} - {p.content}</CardText>
-            </CardBody>
-        </Card>
+        
+            <Button key={p.id} onClick={
+                    this.addToQueue 
+            }>Add "{p.name}" to queue</Button>
         ));
         
     }
@@ -123,10 +145,11 @@ export default class Spotify extends React.Component<{}, State> {
         <div className="App">
             <header className="App-header">
                 <h1>Spotify React</h1>
-                {!token ?
+                {(!token || token =="")  ?
                     <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login
                         to Spotify</a>
-                    : <Button onClick={logout}>Logout</Button>}
+                    : <Button onClick={logout}>Logout</Button>
+                }
                 
                 <Form onSubmit={this.searchArtists}>
                     <FormGroup>
