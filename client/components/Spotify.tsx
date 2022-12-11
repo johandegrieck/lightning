@@ -3,6 +3,7 @@ import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from '
 import { Post } from 'types';
 import api from 'lib/api';
 import axios from 'axios';
+import env from './env';
 
 import {
     CardHeader,
@@ -17,6 +18,7 @@ interface State {
   REDIRECT_URI: string;
   AUTH_ENDPOINT: string;
   RESPONSE_TYPE: string;
+  PERMISSIONSCOPE_SPOTIFY:string;
   isFetching: boolean;
   error: null | string;
   token: null | string;
@@ -42,6 +44,7 @@ export default class Spotify extends React.Component<{}, State> {
     REDIRECT_URI : "http://localhost:3000",
     AUTH_ENDPOINT : "https://accounts.spotify.com/authorize",
     RESPONSE_TYPE : "token",
+    PERMISSIONSCOPE_SPOTIFY:"user-modify-playback-state",
     token:"",
     hash:"",
     searchKey: "null",
@@ -60,21 +63,17 @@ export default class Spotify extends React.Component<{}, State> {
     console.log('uri was set with', uri);
   }
 
-  private addToQueue = async (e) => {
-    console.log('adding to Queueu --------- ', window.localStorage.getItem("token"));
-    const {songUri}  = this.state;
+  // Add a song to the que using the Spotify authorization token
+  private addToQueue = async (e, songUri:String) => {
     const params = {
-        uri: 'spotify:track:03MOcbkkoNLjP0G91iODSB'
+        uri: songUri
     }
-    const headers = {Authorization: "Bearer BQAxWime1_dro60-QUe-h7zhTOuwrkzNfdKqJ2slS55EyQkmU0CcE56vkPSYGDwKaHIftcVUtmM8z9Zby1GRrYOUBBRonNh6qj3ajLPpKzeMEXufAXtgMeGdMO1SQ_hQ8WMelnzD18Kmjz2AgxqYtwkCGD1yAPi81jbjkZRuY_yJXWEO-ILUe4vWqU6IZL__46fjsQVmG77jyU73YaMzs4SVjxjKdcukZ25WbnB_aZKuQUoweG_4jAltLD7E6BoOyIM2uV9fgjMvyFds7eio_zM"}
     
+    const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
     console.log("adding song to queue: ", songUri);
     const {data} = await axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(params.uri), 
         params,
         {headers})
-
-    //this.setState({searchResults:data.tracks.items});
-    console.log("song added !!! ", data);
 }
 
   private searchArtists = async (e) => {
@@ -101,7 +100,7 @@ export default class Spotify extends React.Component<{}, State> {
   render() {
     
 
-    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,artistName,content,isPosting,searchResults } = this.state;
+    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,searchResults } = this.state;
     let {hash, token} = this.state;
 
     const {searchKey, setSearchKey} = this.state;
@@ -132,9 +131,10 @@ export default class Spotify extends React.Component<{}, State> {
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
         
-            <Button key={p.id} onClick={
-                    this.addToQueue 
-            }>Add "{p.name}" to queue</Button>
+            <Button key={p.id} value={} onClick={event => this.addToQueue (event, p.uri)}>
+                <img height={p.album.images[2].height} width={p.album.images[2].height} src={p.album.images[2].url} />
+                {p.name}
+            </Button>
         ));
         
     }
@@ -146,7 +146,7 @@ export default class Spotify extends React.Component<{}, State> {
             <header className="App-header">
                 <h1>Spotify React</h1>
                 {(!token || token =="")  ?
-                    <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login
+                    <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${PERMISSIONSCOPE_SPOTIFY}&response_type=${RESPONSE_TYPE}`}>Login
                         to Spotify</a>
                     : <Button onClick={logout}>Logout</Button>
                 }
