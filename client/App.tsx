@@ -10,7 +10,6 @@ export default class App extends React.Component {
     return (
       <div className="App">
         <Container>
-          <h1> Spotify</h1>
           <Row className="justify-content-md-center">
             <Col xs={12} sm={8}>
               <Spotify />

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import { Post } from 'types';
-import api from 'lib/api';
 import axios from 'axios';
+import time from 'lib/time';
 import env from './env';
+
 
 import {
     CardHeader,
@@ -56,12 +57,8 @@ export default class Spotify extends React.Component<{}, State> {
     isPosting: false,
     pendingPost: null,
     searchResults:null,
-    songUri:'spotify:track:2fV9z65hwYlvX8hYtbEQIZ',
+    songUri:'',
   };
-  private setSongUri = (uri) => {
-    this.setState({songUri:uri});
-    console.log('uri was set with', uri);
-  }
 
   // Add a song to the que using the Spotify authorization token
   private addToQueue = async (e, songUri:String) => {
@@ -130,11 +127,16 @@ export default class Spotify extends React.Component<{}, State> {
     }
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
-        
-            <Button key={p.id} value={} onClick={event => this.addToQueue (event, p.uri)}>
-                <img height={p.album.images[2].height} width={p.album.images[2].height} src={p.album.images[2].url} />
-                {p.name}
-            </Button>
+            <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri)}>
+                <div className="track_art">
+                    <img className='pull-left' height={p.album.images[2].height} width={p.album.images[2].height} src={p.album.images[2].url} />
+                </div>
+                <div className="track__number">1</div>  
+                <div className="track__added"><i className="ion-checkmark-round added"></i></div>
+                <div className="track__title">{p.name} - {p.artists[0].name}</div>
+                <div className="track__explicit"><span className="label">Explicit</span></div>
+                <div className="track__plays">{new Date(p.duration_ms).toISOString().slice(11, 19)}</div>
+            </div>
         ));
         
     }
@@ -144,7 +146,6 @@ export default class Spotify extends React.Component<{}, State> {
 
         <div className="App">
             <header className="App-header">
-                <h1>Spotify React</h1>
                 {(!token || token =="")  ?
                     <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${PERMISSIONSCOPE_SPOTIFY}&response_type=${RESPONSE_TYPE}`}>Login
                         to Spotify</a>
@@ -172,7 +173,9 @@ export default class Spotify extends React.Component<{}, State> {
 
                 <>
                     <h2>Search Results</h2>
+                    <div className='tracks'>
                     {searchResultsContent}
+                    </div>
                 </>
 
                 
