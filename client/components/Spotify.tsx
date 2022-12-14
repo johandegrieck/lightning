@@ -4,6 +4,8 @@ import { Post } from 'types';
 import axios from 'axios';
 import time from 'lib/time';
 import env from './env';
+import api from 'lib/api';
+import QRCode from 'react-qr-code';
 
 
 import {
@@ -34,6 +36,10 @@ interface State {
   pendingPost: null | Post;
   searchResults:null;
   songUri:string;
+  paymentRequest: null | string;
+  back: string;
+  fore: string;
+  size: number;
 }
 
 
@@ -58,10 +64,23 @@ export default class Spotify extends React.Component<{}, State> {
     pendingPost: null,
     searchResults:null,
     songUri:'',
+    paymentRequest:null,
+    back: "#ffffff",
+    fore: "#000000",
+    size: 300
   };
 
   // Add a song to the que using the Spotify authorization token
-  private addToQueue = async (e, songUri:String) => {
+  private addToQueue = async (e, songUri:string) => {
+
+    //const { name, content } = this.state;
+    const name = "requested song";
+    const content = songUri;
+
+    this.setState({
+      isPosting: true,
+      error: null,
+    });
     const params = {
         uri: songUri
     }
@@ -70,7 +89,25 @@ export default class Spotify extends React.Component<{}, State> {
     console.log("adding song to queue: ", songUri);
     const {data} = await axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(params.uri), 
         params,
-        {headers})
+        {headers});
+
+    api.submitSongRequest(name, content)
+      .then(res => {
+        this.setState({
+          isPosting: false,
+          pendingPost: res.post,
+          paymentRequest: res.paymentRequest,
+        });
+        
+        this.checkIfPaid();
+      }).catch(err => {
+        this.setState({
+          isPosting: false,
+          error: err.message,
+        })
+      });
+
+    
 }
 
   private searchArtists = async (e) => {
@@ -97,7 +134,7 @@ export default class Spotify extends React.Component<{}, State> {
   render() {
     
 
-    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,searchResults } = this.state;
+    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,searchResults,paymentRequest, back,fore, size } = this.state;
     let {hash, token} = this.state;
 
     const {searchKey, setSearchKey} = this.state;
@@ -118,6 +155,36 @@ export default class Spotify extends React.Component<{}, State> {
         console.log('token', token);
     }
 
+
+    let cardContent;
+    if (paymentRequest) {
+      cardContent = (
+        <div className="PostForm-pay">
+          <FormGroup>
+            <Input
+              value={paymentRequest}
+              type="textarea"
+              rows="5"
+              disabled
+            />
+          </FormGroup>
+          <FormGroup>
+            <QRCode
+              value={paymentRequest}
+              bgColor={back}
+              fgColor={fore}
+              size={size}
+            />
+          </FormGroup>
+        
+          <Button color="primary" block href={`lightning:${paymentRequest}`}>
+            Open in Wallet
+          </Button>
+        </div>
+      );
+    } else {
+      cardContent =(<div></div>);
+    }
     
 
     const logout = () => {
@@ -152,6 +219,11 @@ export default class Spotify extends React.Component<{}, State> {
                     : <Button onClick={logout}>Logout</Button>
                 }
                 
+                {
+                    // invoice of songRequest
+                    cardContent
+                }
+                
                 <Form onSubmit={this.searchArtists}>
                     <FormGroup>
                         <Input
@@ -183,6 +255,25 @@ export default class Spotify extends React.Component<{}, State> {
         </div>
     );
   }
+
+  
+
+  // Check if they've paid their invoice after a delay. Check again if they
+  // haven't paid yet. Reload the page if they have.
+  private checkIfPaid = () => {
+    setTimeout(() => {
+      const { pendingPost } = this.state;
+      if (!pendingPost) return;
+
+      api.getPost(pendingPost.id).then(p => {
+        if (p.hasPaid) {
+          window.location.reload();
+        } else {
+          this.checkIfPaid();
+        }
+      });
+    }, 1000);
+  };
 
   
 }

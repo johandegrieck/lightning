@@ -1316,7 +1316,7 @@ body {
 
       .album__name {
         color: $white;
-        font-size: $xx-large / 1.2;
+        font-size: calc($xx-large / 1.2);
         font-weight: 100;
       }
 

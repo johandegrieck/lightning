@@ -5,6 +5,7 @@ import { Invoice, Readable } from '@radar/lnrpc';
 import env from './env';
 import { node, initNode } from './node';
 import postsManager from './posts';
+import songRequestsManager from './songrequests';
 
 // Configure server
 const app = express();
@@ -52,6 +53,47 @@ app.post('/api/posts', async (req, res, next) => {
   }
 });
 
+// SONGREQUESTS
+
+app.get('/api/songrequests', (req, res) => {
+  res.json({ data: songRequestsManager.getPaidSongRequests() });
+});
+
+app.get('/api/songrequests/:id', (req, res) => {
+  const songrequest = songRequestsManager.getSongRequest(parseInt(req.params.id, 10));
+  if (songrequest) {
+    res.json({ data: songrequest });
+  } else {
+    res.status(404).json({ error: `No songrequest found with ID ${req.params.id}`});
+  }
+});
+
+app.post('/api/songrequests', async (req, res, next) => {
+  try {
+    const { name, content } = req.body;
+
+    if (!name || !content) {
+      throw new Error('Fields name and content are required to make a songrequest');
+    }
+
+    const songrequest = songRequestsManager.addSongRequest(name, content);
+    const invoice = await node.addInvoice({
+      memo: `Lightning SongRequests songrequest #${songrequest.id}`,
+      value: content.length,
+      expiry: '120', // 2 minutes
+    });
+
+    res.json({
+      data: {
+        songrequest,
+        paymentRequest: invoice.paymentRequest,
+      },
+    });
+  } catch(err) {
+    next(err);
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('You need to load the webpack-dev-server page, not the server page!');
 });
@@ -74,9 +116,16 @@ initNode().then(() => {
 
     // Extract post id from memo, skip if we can't find an id
     const id = parseInt(chunk.memo.replace('Lightning Posts post #', ''), 10);
-    if (!id) return;
+    const id2 = parseInt(chunk.memo.replace('Lightning SongRequests songrequest #', ''), 10);
+    if (!id && !id2) return;
 
+    
     // Mark the invoice as paid!
-    postsManager.markPostPaid(id);
+    if (id) postsManager.markPostPaid(id);
+    // Lightning SongRequests songrequest #
+    if (id2) songRequestsManager.markSongRequestPaid(id2);
+
+
+
   });
 });
