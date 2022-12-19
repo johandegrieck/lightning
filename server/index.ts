@@ -60,9 +60,9 @@ app.get('/api/songrequests', (req, res) => {
 });
 
 app.get('/api/songrequests/:id', (req, res) => {
-  const songrequest = songRequestsManager.getSongRequest(parseInt(req.params.id, 10));
-  if (songrequest) {
-    res.json({ data: songrequest });
+  const songRequest = songRequestsManager.getSongRequest(parseInt(req.params.id, 10));
+  if (songRequest) {
+    res.json({ data: songRequest });
   } else {
     res.status(404).json({ error: `No songrequest found with ID ${req.params.id}`});
   }
@@ -76,16 +76,16 @@ app.post('/api/songrequests', async (req, res, next) => {
       throw new Error('Fields name and content are required to make a songrequest');
     }
 
-    const songrequest = songRequestsManager.addSongRequest(name, content);
+    const songRequest = songRequestsManager.addSongRequest(name, content);
     const invoice = await node.addInvoice({
-      memo: `Lightning SongRequests songrequest #${songrequest.id}`,
+      memo: `Lightning SongRequests songrequest #${songRequest.id}`,
       value: content.length,
       expiry: '120', // 2 minutes
     });
 
     res.json({
       data: {
-        songrequest,
+        songRequest,
         paymentRequest: invoice.paymentRequest,
       },
     });

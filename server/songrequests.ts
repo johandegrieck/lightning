@@ -14,30 +14,30 @@ export interface SongRequest {
 };
 
 class SongRequestsManager extends EventEmitter {
-  songrequests: SongRequest[] = [];
+  songRequests: SongRequest[] = [];
 
   // Add a new songrequest to the list
   addSongRequest(name: string, content: string): SongRequest {
-    const songrequest = {
+    const songRequest = {
       name,
       content,
       id: Math.floor(Math.random() * 100000000) + 1000,
       time: Date.now(),
       hasPaid: false,
     };
-    this.songrequests.push(songrequest);
-    return songrequest;
+    this.songRequests.push(songRequest);
+    return songRequest;
   }
 
   // Gets a particular songrequest given an ID
   getSongRequest(id: number): SongRequest | undefined {
-    return this.songrequests.find(p => p.id === id);
+    return this.songRequests.find(p => p.id === id);
   }
 
   // Mark a songrequest as paid
   markSongRequestPaid(id: number) {
     let updatedSongRequest;
-    this.songrequests = this.songrequests.map(p => {
+    this.songRequests = this.songRequests.map(p => {
       if (p.id === id) {
         updatedSongRequest = { ...p, hasPaid: true };
         return updatedSongRequest;
@@ -46,13 +46,13 @@ class SongRequestsManager extends EventEmitter {
     });
 
     if (updatedSongRequest) {
-      this.emit('songrequest', updatedSongRequest);
+      this.emit('songRequest', updatedSongRequest);
     }
   }
 
   // Return songrequests that have been paid for in time order
   getPaidSongRequests() {
-    return this.songrequests
+    return this.songRequests
       .filter(p => !!p.hasPaid)
       .sort((a, b) => b.time - a.time);
   }

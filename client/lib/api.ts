@@ -1,5 +1,6 @@
 import { stringify } from 'query-string';
 import { Post } from 'types';
+import { SongRequest } from 'types';
 
 type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -28,9 +29,9 @@ class API {
   }
 
   submitSongRequest(name: string, content: string) {
-    return this.request<{ post: Post; paymentRequest: string; }>(
+    return this.request<{ songRequest: SongRequest; paymentRequest: string; }>(
       'POST',
-      '/posts',
+      '/songrequests',
       { name, content },
     );
   }
@@ -40,7 +41,7 @@ class API {
   }
 
   getSongRequest(id: number) {
-    return this.request<Post>('GET', `/songrequest/${id}`);
+    return this.request<Post>('GET', `/songrequests/${id}`);
   }
 
   // Internal fetch function. Makes a request to the server, and either returns

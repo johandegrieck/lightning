@@ -7,3 +7,11 @@ export interface Post {
   time: number;
   hasPaid: boolean;
 }
+
+export interface SongRequest {
+  id: number;
+  name: string;
+  content: string;
+  time: number;
+  hasPaid: boolean;
+}

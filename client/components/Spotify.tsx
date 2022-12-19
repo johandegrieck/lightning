@@ -1,10 +1,10 @@
 import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
-import { Post } from 'types';
 import axios from 'axios';
 import time from 'lib/time';
 import env from './env';
 import api from 'lib/api';
+import { SongRequest } from 'types';
 import QRCode from 'react-qr-code';
 
 
@@ -33,7 +33,8 @@ interface State {
   artistName: string;
   content: string;
   isPosting: boolean;
-  pendingPost: null | Post;
+  pendingSongRequest: null | SongRequest;
+  uriParams:null;
   searchResults:null;
   songUri:string;
   paymentRequest: null | string;
@@ -61,7 +62,8 @@ export default class Spotify extends React.Component<{}, State> {
     artistName: '',
     content: '',
     isPosting: false,
-    pendingPost: null,
+    pendingSongRequest: null,
+    uriParams: null,
     searchResults:null,
     songUri:'',
     paymentRequest:null,
@@ -71,31 +73,30 @@ export default class Spotify extends React.Component<{}, State> {
   };
 
   // Add a song to the que using the Spotify authorization token
-  private addToQueue = async (e, songUri:string) => {
+  private addToQueue = async (e, songUri:string, artistName:string) => {
 
     //const { name, content } = this.state;
-    const name = "requested song";
+    const name = artistName;
     const content = songUri;
 
     this.setState({
       isPosting: true,
       error: null,
     });
-    const params = {
+    const uriParams = {
         uri: songUri
     }
     
-    const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
-    console.log("adding song to queue: ", songUri);
-    const {data} = await axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(params.uri), 
-        params,
-        {headers});
+    
+    
 
     api.submitSongRequest(name, content)
       .then(res => {
+        console.log('submitSongRequest',res);
         this.setState({
+          uriParams: uriParams,
           isPosting: false,
-          pendingPost: res.post,
+          pendingSongRequest: res.songRequest,
           paymentRequest: res.paymentRequest,
         });
         
@@ -134,7 +135,7 @@ export default class Spotify extends React.Component<{}, State> {
   render() {
     
 
-    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,searchResults,paymentRequest, back,fore, size } = this.state;
+    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,uriParams,searchResults,paymentRequest, back,fore, size } = this.state;
     let {hash, token} = this.state;
 
     const {searchKey, setSearchKey} = this.state;
@@ -194,7 +195,7 @@ export default class Spotify extends React.Component<{}, State> {
     }
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
-            <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri)}>
+            <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri,p.artists[0].name)}>
                 <div className="track_art">
                     <img className='pull-left' height={p.album.images[2].height} width={p.album.images[2].height} src={p.album.images[2].url} />
                 </div>
@@ -262,14 +263,30 @@ export default class Spotify extends React.Component<{}, State> {
   // haven't paid yet. Reload the page if they have.
   private checkIfPaid = () => {
     setTimeout(() => {
-      const { pendingPost } = this.state;
-      if (!pendingPost) return;
 
-      api.getPost(pendingPost.id).then(p => {
+      const { pendingSongRequest } = this.state;
+      const {uriParams } = this.state;
+      console.log("uriParams ======= ",uriParams);
+
+      
+
+      if (!pendingSongRequest) return;
+
+      api.getSongRequest(pendingSongRequest.id).then(p => {
         if (p.hasPaid) {
-          window.location.reload();
+            const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
+            
+            console.log("adding song to queue: ", uriParams.uri);
+            axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(uriParams.uri), uriParams, {headers}).then(res=> {
+                console.log("SUCCESS!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ");
+                window.location.reload();
+            }).catch(err =>{
+                console.log("FAIL!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ", err.message);
+            });
+            
+          
         } else {
-          this.checkIfPaid();
+          this.checkIfPaid(uriParams);
         }
       });
     }, 1000);

@@ -137,6 +137,7 @@ export default class PostForm extends React.Component<{}, State> {
 
     api.submitPost(name, content)
       .then(res => {
+        console.log("submitPost",res);
         this.setState({
           isPosting: false,
           pendingPost: res.post,
@@ -156,6 +157,7 @@ export default class PostForm extends React.Component<{}, State> {
   private checkIfPaid = () => {
     setTimeout(() => {
       const { pendingPost } = this.state;
+      console.log("pendingPost",pendingPost);
       if (!pendingPost) return;
 
       api.getPost(pendingPost.id).then(p => {
