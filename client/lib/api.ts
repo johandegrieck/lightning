@@ -37,7 +37,7 @@ class API {
   }
 
   getSongRequests() {
-    return this.request<Post[]>('GET', '/songrequest');
+    return this.request<Post[]>('GET', '/songrequests');
   }
 
   getSongRequest(id: number) {

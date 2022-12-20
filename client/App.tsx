@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'reactstrap';
 import PostForm from 'components/PostForm';
 import Posts from 'components/Posts';
 import Spotify from 'components/Spotify';
+import SongRequests from 'components/SongRequests';
 import './App.scss';
 
 export default class App extends React.Component {
@@ -13,6 +14,7 @@ export default class App extends React.Component {
           <Row className="justify-content-md-center">
             <Col xs={12} sm={8}>
               <Spotify />
+              <SongRequests />
             </Col>
           </Row>
           <h1 className="App-title">Lightning Posts</h1>
