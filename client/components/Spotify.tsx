@@ -132,6 +132,10 @@ export default class Spotify extends React.Component<{}, State> {
     this.setState({ [ev.target.name]: ev.target.value } as any);
   };
 
+  private cancelSongRequest=() => {
+    window.location.reload();
+  }
+
   render() {
     
 
@@ -160,27 +164,50 @@ export default class Spotify extends React.Component<{}, State> {
     let cardContent;
     if (paymentRequest) {
       cardContent = (
-        <div className="PostForm-pay">
-          <FormGroup>
-            <Input
-              value={paymentRequest}
-              type="textarea"
-              rows="5"
-              disabled
-            />
-          </FormGroup>
-          <FormGroup>
-            <QRCode
-              value={paymentRequest}
-              bgColor={back}
-              fgColor={fore}
-              size={size}
-            />
-          </FormGroup>
+        <div>
+        <div id="exampleModalLive" className="modal fade show"  role="dialog" aria-labelledby="exampleModalLiveLabel" aria-modal="true" >
+                  <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title" id="exampleModalLiveLabel">Lightning invoice</h5>
+                        <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={event => this.cancelSongRequest()}>
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </div>
+                      <div className="modal-body">
+                      <div className="PostForm-pay">
+                        
+                        <FormGroup>
+                          <QRCode
+                            value={paymentRequest}
+                            bgColor={back}
+                            fgColor={fore}
+                            size={size}
+                          />
+                        </FormGroup>
+                        <div className="d-none">
+                          <FormGroup>
+                            <Input
+                              value={paymentRequest}
+                              type="textarea"
+                              rows="1"
+                              disabled
+                            />
+                          </FormGroup>
+                        
+                          <Button color="primary" block href={`lightning:${paymentRequest}`}>
+                            Open in Wallet
+                          </Button>
+                        </div>
+                      </div>
+                      </div>
+                      <div className="modal-footer d-flex justify-content-around">
+                        <button type="button" className="btn btn-secondary"  data-dismiss="modal" onClick={event => this.cancelSongRequest()}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
         
-          <Button color="primary" block href={`lightning:${paymentRequest}`}>
-            Open in Wallet
-          </Button>
         </div>
       );
     } else {
@@ -219,7 +246,6 @@ export default class Spotify extends React.Component<{}, State> {
                         to Spotify</a>
                     : <Button onClick={logout}>Logout</Button>
                 }
-                
                 {
                     // invoice of songRequest
                     cardContent

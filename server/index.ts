@@ -79,7 +79,7 @@ app.post('/api/songrequests', async (req, res, next) => {
     const songRequest = songRequestsManager.addSongRequest(name, content);
     const invoice = await node.addInvoice({
       memo: `Lightning SongRequests songrequest #${songRequest.id}`,
-      value: content.length,
+      value: env.INVOICE_AMOUNT_SONGREQUEST,
       expiry: '120', // 2 minutes
     });
 
