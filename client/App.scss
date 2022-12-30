@@ -9,8 +9,18 @@
   }
 }
 
+h2{
+  padding-top: 1rem;
+  font-family: 'Lobster', cursive;
+  color: $grey;
+}
+
 .modal.show{
   display: block;
   background:#0000006e;
+}
+
+.jumbotron{
+  border-radius: 0px;
 }
 

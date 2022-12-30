@@ -1,8 +1,7 @@
 import React from 'react';
+import { Container, Row, Col } from 'reactstrap';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import axios from 'axios';
-import time from 'lib/time';
-import env from './env';
 import api from 'lib/api';
 import { SongRequest } from 'types';
 import QRCode from 'react-qr-code';
@@ -17,11 +16,6 @@ import {
   } from 'reactstrap';
 
 interface State {
-  CLIENT_ID: string;
-  REDIRECT_URI: string;
-  AUTH_ENDPOINT: string;
-  RESPONSE_TYPE: string;
-  PERMISSIONSCOPE_SPOTIFY:string;
   isFetching: boolean;
   error: null | string;
   token: null | string;
@@ -48,11 +42,6 @@ export default class Spotify extends React.Component<{}, State> {
   state: State = {
     isFetching: false,
     error: null,
-    CLIENT_ID : "52f4c5a24ece4a929538e2f6ef1bc95b",
-    REDIRECT_URI : "http://localhost:3000",
-    AUTH_ENDPOINT : "https://accounts.spotify.com/authorize",
-    RESPONSE_TYPE : "token",
-    PERMISSIONSCOPE_SPOTIFY:"user-modify-playback-state",
     token:"",
     hash:"",
     searchKey: "null",
@@ -139,7 +128,7 @@ export default class Spotify extends React.Component<{}, State> {
   render() {
     
 
-    const { CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE,PERMISSIONSCOPE_SPOTIFY,artistName,content,isPosting,uriParams,searchResults,paymentRequest, back,fore, size } = this.state;
+    const { artistName,content,isPosting,uriParams,searchResults,paymentRequest, back,fore, size } = this.state;
     let {hash, token} = this.state;
 
     const {searchKey, setSearchKey} = this.state;
@@ -174,7 +163,7 @@ export default class Spotify extends React.Component<{}, State> {
                           <span aria-hidden="true">×</span>
                         </button>
                       </div>
-                      <div className="modal-body">
+                      <div className="modal-body d-flex justify-content-around">
                       <div className="PostForm-pay">
                         
                         <FormGroup>
@@ -241,17 +230,16 @@ export default class Spotify extends React.Component<{}, State> {
 
         <div className="App">
             <header className="App-header">
-                {(!token || token =="")  ?
-                    <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${PERMISSIONSCOPE_SPOTIFY}&response_type=${RESPONSE_TYPE}`}>Login
-                        to Spotify</a>
-                    : <Button onClick={logout}>Logout</Button>
-                }
+                
                 {
                     // invoice of songRequest
                     cardContent
                 }
                 
                 <Form onSubmit={this.searchArtists}>
+                <h2>Search a song or album:</h2>
+                <Row className="justify-content-md-center">
+                  <Col xs={12} sm={8}>
                     <FormGroup>
                         <Input
                         name="artistName"
@@ -260,18 +248,24 @@ export default class Spotify extends React.Component<{}, State> {
                         onChange={e => this.setState({artistName:e.target.value})}
                         />
                     </FormGroup>
-
-                    <Button color="primary" size="lg" type="submit" block disabled={disabled}>
+                  </Col>
+                  <Col xs={12} sm={4}>
+                    <Button color="primary" type="submit" block disabled={disabled}>
                         {isPosting ? (
                         <Spinner size="sm" />
                         ) : (
-                        <>Search Artists {artistName.length > 0 ? "\""+artistName+"\"" : ""}</>
+                        <>Search</>
                         )}
                     </Button>
+                  </Col>
+                  
+                </Row>
+                    
+                    
+                    
                 </Form> 
 
                 <>
-                    <h2>Search Results</h2>
                     <div className='tracks'>
                     {searchResultsContent}
                     </div>

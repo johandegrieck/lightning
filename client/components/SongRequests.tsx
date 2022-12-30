@@ -28,12 +28,17 @@ export default class SongRequests extends React.Component<{}, State> {
     if (songRequests) {
       if (songRequests.length) {
         content = songRequests.map(p => (
-          <Card key={p.id} className="mb-3">
-            <CardBody>
-              <CardTitle tag="h4">{p.name} says:</CardTitle>
-              <CardText>{p.content}</CardText>
-            </CardBody>
-          </Card>
+          <div className='track' key={p.id} >
+                <div className="track_art">
+                    <img className='pull-left' height='20px' width='20px' src={'p.id'} />
+                </div>
+                <div className="track__number">1</div>  
+                <div className="track__added"><i className="ion-checkmark-round added"></i></div>
+                <div className="track__title">{p.name}</div>
+            </div>
+
+          
+
         ));
       } else {
         content = (
@@ -57,7 +62,9 @@ export default class SongRequests extends React.Component<{}, State> {
     return (
       <>
         <h2>Latest SongRequests</h2>
-        {content}
+        <div className="tracks">
+          {content}
+        </div>
       </>
     );
   }
