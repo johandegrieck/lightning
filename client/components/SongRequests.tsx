@@ -2,6 +2,7 @@ import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import { SongRequest } from 'types';
 import api from 'lib/api';
+import axios from 'axios';
 
 interface State {
   songRequests: null | SongRequest[];
@@ -30,11 +31,9 @@ export default class SongRequests extends React.Component<{}, State> {
         content = songRequests.map(p => (
           <div className='track' key={p.id} >
                 <div className="track_art">
-                    <img className='pull-left' height='20px' width='20px' src={'p.id'} />
+                    <img height='64px' width='64px' src={p.imageUrl} />
                 </div>
-                <div className="track__number">1</div>  
-                <div className="track__added"><i className="ion-checkmark-round added"></i></div>
-                <div className="track__title">{p.name}</div>
+                <div className="track__title"><p>{p.name}</p><p>{p.songName}</p></div>
             </div>
 
           
@@ -72,6 +71,7 @@ export default class SongRequests extends React.Component<{}, State> {
   // Fetch songRequests from the API and update state
   private getSongRequests = () => {
     this.setState({ isFetching: true });
+    // get the Paid Song Requests
     api.getSongRequests().then(songRequests => {
       this.setState({
         songRequests,

@@ -5,6 +5,7 @@ import Posts from 'components/Posts';
 import Spotify from 'components/Spotify';
 import SpotifyLogin from 'components/SpotifyLogin';
 import SongRequests from 'components/SongRequests';
+import PlayerQueue from 'components/PlayerQueue';
 import './App.scss';
 import { Button } from 'reactstrap';
 
@@ -22,6 +23,7 @@ export default class App extends React.Component {
             </Col>
             <Col xs={12} sm={4}>
             <SongRequests />
+            <PlayerQueue />
             </Col>
             
           </Row>

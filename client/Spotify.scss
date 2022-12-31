@@ -3,7 +3,7 @@
 $green: rgb(30, 215, 96);
 $light-black: rgb(40, 40, 40);
 $black: rgb(24, 24, 24);
-$grey: rgb(170, 170, 170);
+$grey: rgb(140, 140, 140);
 $sand: rgb(200, 200, 200);
 $white: rgb(255, 255, 255);
 $blue: #4688d7;
@@ -1035,7 +1035,7 @@ body {
       display: flex;
       flex-flow: row wrap;
       align-items: center;
-      padding: 10px;
+      padding: 6px;
       cursor:pointer;
     }
 
@@ -1074,9 +1074,26 @@ body {
     }
 
     &__title {
-      width: 45%;
-      margin-left: $margin * 2;
+      //width: 45%;
+      //margin-left: $margin * 2;
       color: $sand;
+      white-space: nowrap;
+      width: 212px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      > p{
+        margin: 0;
+        margin-left: 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 200px;
+        &:last-child{
+          color:$grey;
+          text-transform: uppercase;
+          font-size: $small;
+        }
+      }
 
       &.featured {
         .title {
@@ -1154,7 +1171,7 @@ body {
 
     .track {
       &__title {
-        width: auto !important;
+        //width: auto !important;
       }
 
       &__explicit {

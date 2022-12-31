@@ -62,11 +62,7 @@ export default class Spotify extends React.Component<{}, State> {
   };
 
   // Add a song to the que using the Spotify authorization token
-  private addToQueue = async (e, songUri:string, artistName:string) => {
-
-    //const { name, content } = this.state;
-    const name = artistName;
-    const content = songUri;
+  private addToQueue = async (e, songUri:string, songName:string, artistName:string, imageUrl:string) => {
 
     this.setState({
       isPosting: true,
@@ -79,9 +75,9 @@ export default class Spotify extends React.Component<{}, State> {
     
     
 
-    api.submitSongRequest(name, content)
+    api.submitSongRequest(artistName, songUri, imageUrl, songName)
       .then(res => {
-        console.log('submitSongRequest',res);
+        //console.log('submitSongRequest',res);
         this.setState({
           uriParams: uriParams,
           isPosting: false,
@@ -211,14 +207,12 @@ export default class Spotify extends React.Component<{}, State> {
     }
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
-            <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri,p.artists[0].name)}>
+            <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri,p.name,p.artists[0].name, p.album.images[2].url)}>
                 <div className="track_art">
                     <img className='pull-left' height={p.album.images[2].height} width={p.album.images[2].height} src={p.album.images[2].url} />
                 </div>
-                <div className="track__number">1</div>  
                 <div className="track__added"><i className="ion-checkmark-round added"></i></div>
-                <div className="track__title">{p.name} - {p.artists[0].name}</div>
-                <div className="track__explicit"><span className="label">Explicit</span></div>
+                <div className="track__title"><p>{p.name}</p><p>{p.artists[0].name}</p></div>
                 <div className="track__plays">{new Date(p.duration_ms).toISOString().slice(11, 19)}</div>
             </div>
         ));
@@ -306,7 +300,7 @@ export default class Spotify extends React.Component<{}, State> {
             
           
         } else {
-          this.checkIfPaid(uriParams);
+          this.checkIfPaid();
         }
       });
     }, 1000);

@@ -14,4 +14,6 @@ export interface SongRequest {
   content: string;
   time: number;
   hasPaid: boolean;
+  imageUrl: string;
+  songName:string;
 }

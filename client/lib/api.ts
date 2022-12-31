@@ -28,21 +28,22 @@ class API {
     return this.request<Post>('GET', `/posts/${id}`);
   }
 
-  submitSongRequest(name: string, content: string) {
+  submitSongRequest(name: string, content: string, imageUrl:string, songName:string) {
     return this.request<{ songRequest: SongRequest; paymentRequest: string; }>(
       'POST',
       '/songrequests',
-      { name, content },
+      { name, content, songName, imageUrl },
     );
   }
 
   getSongRequests() {
-    return this.request<Post[]>('GET', '/songrequests');
+    return this.request<SongRequest[]>('GET', '/songrequests');
   }
 
   getSongRequest(id: number) {
-    return this.request<Post>('GET', `/songrequests/${id}`);
+    return this.request<SongRequest>('GET', `/songrequests/${id}`);
   }
+  
 
   // Internal fetch function. Makes a request to the server, and either returns
   // JSON parsed data from the request, or throws an error.

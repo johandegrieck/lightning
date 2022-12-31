@@ -70,13 +70,13 @@ app.get('/api/songrequests/:id', (req, res) => {
 
 app.post('/api/songrequests', async (req, res, next) => {
   try {
-    const { name, content } = req.body;
+    const { name, content, songName, imageUrl } = req.body;
 
     if (!name || !content) {
       throw new Error('Fields name and content are required to make a songrequest');
     }
 
-    const songRequest = songRequestsManager.addSongRequest(name, content);
+    const songRequest = songRequestsManager.addSongRequest(name, content, songName, imageUrl);
     const invoice = await node.addInvoice({
       memo: `Lightning SongRequests songrequest #${songRequest.id}`,
       value: env.INVOICE_AMOUNT_SONGREQUEST,

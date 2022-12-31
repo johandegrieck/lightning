@@ -11,19 +11,23 @@ export interface SongRequest {
   name: string;
   content: string;
   hasPaid: boolean;
+  imageUrl: string;
+  songName:string;
 };
 
 class SongRequestsManager extends EventEmitter {
   songRequests: SongRequest[] = [];
 
   // Add a new songrequest to the list
-  addSongRequest(name: string, content: string): SongRequest {
+  addSongRequest(name: string, content: string, songName:string, imageUrl: string): SongRequest {
     const songRequest = {
       name,
       content,
       id: Math.floor(Math.random() * 100000000) + 1000,
       time: Date.now(),
       hasPaid: false,
+      imageUrl,
+      songName
     };
     this.songRequests.push(songRequest);
     return songRequest;
