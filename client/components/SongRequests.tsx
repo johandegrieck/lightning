@@ -33,7 +33,7 @@ export default class SongRequests extends React.Component<{}, State> {
                 <div className="track_art">
                     <img height='64px' width='64px' src={p.imageUrl} />
                 </div>
-                <div className="track__title"><p>{p.name}</p><p>{p.songName}</p></div>
+                <div className="track__title"><p>{p.songName}</p><p>{p.name}</p></div>
             </div>
 
           
@@ -60,8 +60,8 @@ export default class SongRequests extends React.Component<{}, State> {
 
     return (
       <>
-        <h2>Latest SongRequests</h2>
-        <div className="tracks">
+        <h2>Songs Requested</h2>
+        <div className="tracks tracks--requested">
           {content}
         </div>
       </>

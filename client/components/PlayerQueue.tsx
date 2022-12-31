@@ -34,7 +34,7 @@ export default class PlayerQueue extends React.Component<{}, State> {
                 <div className="track_art">
                     <img className='pull-left'  height={p.album.images[2].height} width={p.album.images[2].width} src={p.album.images[2].url}  />
                 </div>  
-                <div className="track__title"><p>{p.album.artists[0].name}</p><p>{p.name}</p></div>
+                <div className="track__title"><p>{p.name}</p><p>{p.album.artists[0].name}</p></div>
             </div>
 
           
@@ -62,7 +62,7 @@ export default class PlayerQueue extends React.Component<{}, State> {
     return (
       <>
         <h2>PlayerQueue</h2>
-        <div className="tracks">
+        <div className="tracks tracks--queue">
           {content}
         </div>
       </>

@@ -260,7 +260,7 @@ export default class Spotify extends React.Component<{}, State> {
                 </Form> 
 
                 <>
-                    <div className='tracks'>
+                    <div className='tracks tracks--search'>
                     {searchResultsContent}
                     </div>
                 </>

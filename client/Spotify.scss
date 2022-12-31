@@ -1036,12 +1036,8 @@ body {
       flex-flow: row wrap;
       align-items: center;
       padding: 6px;
-      cursor:pointer;
     }
 
-    &:hover {
-      background: $light-black;
-    }
 
     &:last-child {
       border-bottom: 1px solid $light-black;
@@ -1620,4 +1616,59 @@ button {
   letter-spacing: 1.25px;
   font-size: $x-small * 1.2;
   margin-bottom: $margin-sm;
+}
+
+/* SPINNING VINYL RECORD */
+
+.tracks.tracks {
+  &--currentlyplaying  {
+    background-color:$sand;
+    border-radius: 6px;
+
+    .track .track_art img {
+      animation-name: spin;
+      animation-duration: 8000ms;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear; 
+      border-radius:32px;
+      
+      border:10px solid #282828;
+    }
+    .track .track__title > p:first-child{
+      color:$black;
+    }
+  }
+}
+@keyframes spin {
+  from {
+      transform:rotate(0deg);
+  }
+  to {
+      transform:rotate(360deg);
+  }
+}
+
+
+//
+.tracks.tracks--search{
+  .track {
+    & {
+      cursor:pointer;
+    }
+
+    &:hover {
+      background: $light-black;
+    }
+  }
+}
+
+.tracks.tracks--queue, .tracks.tracks--requested{
+  img {
+    width:32px;
+    height: 32px;
+  }
+  .track__title{
+    font-size: $small;
+    line-height: 16px;
+  }
 }
