@@ -2,7 +2,6 @@ import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import { SongRequest } from 'types';
 import api from 'lib/api';
-import axios from 'axios';
 
 interface State {
   songRequests: null | SongRequest[];

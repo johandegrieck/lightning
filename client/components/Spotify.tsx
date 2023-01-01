@@ -199,12 +199,6 @@ export default class Spotify extends React.Component<{}, State> {
       cardContent =(<div></div>);
     }
     
-
-    const logout = () => {
-        token = "";
-        window.localStorage.removeItem("token");
-        console.log("logout - value token",token);
-    }
     if(searchResults){
         searchResultsContent = searchResults.map(p => (
             <div className='track' key={p.id} onClick={event => this.addToQueue (event, p.uri,p.name,p.artists[0].name, p.album.images[2].url)}>
@@ -285,6 +279,8 @@ export default class Spotify extends React.Component<{}, State> {
       
 
       if (!pendingSongRequest) return;
+
+      // When the request was payed, add the song to the playing queue and refresh the page
 
       api.getSongRequest(pendingSongRequest.id).then(p => {
         if (p.hasPaid) {
