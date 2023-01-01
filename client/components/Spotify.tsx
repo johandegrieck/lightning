@@ -102,7 +102,7 @@ export default class Spotify extends React.Component<{}, State> {
         e.preventDefault()
         const {data} = await axios.get("https://api.spotify.com/v1/search", {
             headers: {
-                Authorization: `Bearer ${window.localStorage.getItem("token")}`
+                Authorization: `Bearer ${window.localStorage.getItem("access_token")}`
             },
             params: {
                 q: artistName,
@@ -284,7 +284,7 @@ export default class Spotify extends React.Component<{}, State> {
 
       api.getSongRequest(pendingSongRequest.id).then(p => {
         if (p.hasPaid) {
-            const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
+            const headers = {Authorization: "Bearer "+window.localStorage.getItem("access_token")}
             
             console.log("adding song to queue: ", uriParams.uri);
             axios.post("https://api.spotify.com/v1/me/player/queue"+"?uri="+encodeURI(uriParams.uri), uriParams, {headers}).then(res=> {

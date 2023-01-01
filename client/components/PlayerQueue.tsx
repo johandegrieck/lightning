@@ -69,7 +69,7 @@ export default class PlayerQueue extends React.Component<{}, State> {
 
   private getPlayerQueue = async () => {
     //const {artistName}  = this.state;
-    const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
+    const headers = {Authorization: "Bearer "+window.localStorage.getItem("access_token")}
     console.log("adding song to queue: ****** getPlayerQueue *******");
             
             

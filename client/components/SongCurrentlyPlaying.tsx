@@ -70,7 +70,7 @@ export default class SongCurrentlyPlaying extends React.Component<{}, State> {
 
   private getSongCurrentlyPlaying = async () => {
     //const {artistName}  = this.state;
-    const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
+    const headers = {Authorization: "Bearer "+window.localStorage.getItem("access_token")}
     console.log("adding song to queue: ****** getSongCurrentlyPlaying *******");
             
             

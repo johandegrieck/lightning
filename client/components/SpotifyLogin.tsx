@@ -12,6 +12,7 @@ import {
 interface State {
   isFetching: boolean;
   error: null | string;
+  code: null | string;
   token: null | string;
   hash:null | string;
 }
@@ -21,28 +22,62 @@ export default class Spotify extends React.Component<{}, State> {
   state: State = {
     isFetching: false,
     error: null,
+    code:"",
     token:"",
     hash:"",
   };
+
+
+  private getAccessToken = async () => {
+    //const {artistName}  = this.state;
+    //const headers = {Authorization: "Bearer "+window.localStorage.getItem("token")}
+    const headers = {
+      'content-type':'application/x-www-form-urlencoded',
+      Authorization: `Basic  ${new Buffer.from(`${process.env.REACT_APP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`).toString('base64')}`
+    }
+
+    const dataParams = {
+          grant_type: 'authorization_code',
+          code: window.localStorage.getItem("code"),
+          redirect_uri: process.env.REACT_APP_REDIRECT_URI
+    }
+            
+            
+    axios.post("https://accounts.spotify.com/api/token",dataParams , {headers}).then(res=> {
+        console.log("SUCCESS!!!! --> axio.post call https://accounts.spotify.com/api/token ", res.data);
+        window.localStorage.setItem("access_token", res.data.access_token);
+        window.localStorage.setItem("refresh_token", res.data.refresh_token);
+
+        //window.location.reload();
+        //this.setState({songCurrentlyPlaying:res.data});
+
+    }).catch(err =>{
+        console.log("FAIL!!!! --> axio.post call https://accounts.spotify.com/api/token ", err.message);
+    });
+
+              
+  }
+  
   
   render() {
-    let {hash, token} = this.state;
+    let {hash, code} = this.state;
 
-    hash = window.location.hash;
-    console.log("hash ------", hash);
+    hash = window.location.search;
+    console.log("search query string ------", hash);
     console.log("location ------", window.location);
-    token = window.localStorage.getItem("token");
+    code = window.localStorage.getItem("code");
     
-    if (!token && hash) {
-        token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
+    if (!code && hash) {
+        code = hash.substring(1).split("&").find(elem => elem.startsWith("code")).split("=")[1]
         window.location.hash = ""
-        window.localStorage.setItem("token", token)
-        console.log('token', token);
+        window.localStorage.setItem("code", code)
+        console.log('code', code);
+        this.getAccessToken();
     }
 
     const logout = () => {
-        token = "";
-        window.localStorage.removeItem("token");
+        code = "";
+        window.localStorage.removeItem("code");
         window.location.reload();
     }
     
@@ -52,10 +87,11 @@ export default class Spotify extends React.Component<{}, State> {
     return (
 
       <div className="float-left">
-          {(!token || token =="")  ?
+          {(!code || code =="")  ?
               // https://accounts.spotify.com/authorize?response_type=code&client_id=$CLIENT_ID&scope=$SCOPE&redirect_uri=$REDIRECT_URI
-              <a href={`${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=${process.env.REACT_APP_PERMISSIONSCOPE_SPOTIFY}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}`}>Login
-                  to Spotify</a>
+              <a href={`${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=${process.env.REACT_APP_PERMISSIONSCOPE_SPOTIFY}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}`}>
+                Login to Spotify
+              </a>
               : <Button onClick={logout}>Logout</Button>
           }
           
