@@ -1,6 +1,7 @@
 import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import axios from 'axios';
+import tokenRefresher from '../lib/tokenrefresher';
 
 interface State {
   songCurrentlyPlaying: null;
@@ -75,12 +76,17 @@ export default class SongCurrentlyPlaying extends React.Component<{}, State> {
             
             
             axios.get("https://api.spotify.com/v1/me/player/currently-playing", {headers}).then(res=> {
-                console.log("SUCCESS!!!! --> axio.post call https://api.spotify.com/v1/me/player/currently-playing ", res.data);
+                console.log("SUCCESS, GOT THE PLAYING SONG!!!! ", res.data);
                 //window.location.reload();
                 this.setState({songCurrentlyPlaying:res.data});
 
             }).catch(err =>{
-                console.log("FAIL!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ", err.message);
+                console.log("FAIL!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ", err.message, err.response.data.error.status);
+                if(err.response.data.error.status == 401 ){
+                  tokenRefresher.refreshAccessToken(window.localStorage.getItem("refresh_token"));
+                  this.getSongCurrentlyPlaying();
+                }
+                
             });
 
             

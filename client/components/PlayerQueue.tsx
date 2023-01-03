@@ -1,6 +1,7 @@
 import React from 'react';
 import { Spinner, Card, CardTitle, CardBody, CardText, Alert, Jumbotron } from 'reactstrap';
 import axios from 'axios';
+import tokenRefresher from '../lib/tokenrefresher';
 
 interface State {
   songsInQueue: null;
@@ -74,12 +75,16 @@ export default class PlayerQueue extends React.Component<{}, State> {
             
             
             axios.get("https://api.spotify.com/v1/me/player/queue", {headers}).then(res=> {
-                console.log("SUCCESS!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ", res);
+                console.log("SUCCESS GOT PLAYERQUEUE !!!! ", res);
                 //window.location.reload();
                 this.setState({songsInQueue:res.data.queue});
 
             }).catch(err =>{
                 console.log("FAIL!!!! --> axio.post call https://api.spotify.com/v1/me/player/queue ", err.message);
+                if(err.response.data.error.status == 401 ){
+                  tokenRefresher.refreshAccessToken(window.localStorage.getItem("refresh_token"));
+                  this.getPlayerQueue();
+                }
             });
 
             

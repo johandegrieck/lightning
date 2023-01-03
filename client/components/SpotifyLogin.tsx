@@ -44,15 +44,18 @@ export default class Spotify extends React.Component<{}, State> {
             
             
     axios.post("https://accounts.spotify.com/api/token",dataParams , {headers}).then(res=> {
-        console.log("SUCCESS!!!! --> axio.post call https://accounts.spotify.com/api/token ", res.data);
+        console.log("SUCCESS GOT A NEW TOKEN !!!! --> axio.post call https://accounts.spotify.com/api/token ", res.data);
         window.localStorage.setItem("access_token", res.data.access_token);
         window.localStorage.setItem("refresh_token", res.data.refresh_token);
+        window.localStorage.setItem("code","");
 
-        //window.location.reload();
+        window.location.replace(`${process.env.REACT_APP_REDIRECT_URI}`);
         //this.setState({songCurrentlyPlaying:res.data});
 
     }).catch(err =>{
         console.log("FAIL!!!! --> axio.post call https://accounts.spotify.com/api/token ", err.message);
+        window.localStorage.setItem("code","");
+        //window.location.reload();
     });
 
               
@@ -63,34 +66,30 @@ export default class Spotify extends React.Component<{}, State> {
     let {hash, code} = this.state;
 
     hash = window.location.search;
-    console.log("search query string ------", hash);
-    console.log("location ------", window.location);
     code = window.localStorage.getItem("code");
     
     if (!code && hash) {
-        code = hash.substring(1).split("&").find(elem => elem.startsWith("code")).split("=")[1]
-        window.location.hash = ""
-        window.localStorage.setItem("code", code)
-        console.log('code', code);
+        code = hash.substring(1).split("&").find(elem => elem.startsWith("code")).split("=")[1];
+        window.localStorage.setItem("code", code);  
+        console.log('got code from query string :', code);
         this.getAccessToken();
     }
 
     const logout = () => {
         code = "";
-        window.localStorage.removeItem("code");
-        window.location.reload();
+        window.localStorage.setItem("code", "");
+        window.localStorage.setItem("access_token","");
+        window.localStorage.setItem("refresh_token","");
+        window.location.replace(`${process.env.REACT_APP_REDIRECT_URI}`);
     }
     
-    
-    
-
     return (
 
       <div className="float-left">
-          {(!code || code =="")  ?
+          {(!window.localStorage.getItem("refresh_token"))  ?
               // https://accounts.spotify.com/authorize?response_type=code&client_id=$CLIENT_ID&scope=$SCOPE&redirect_uri=$REDIRECT_URI
               <a href={`${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=${process.env.REACT_APP_PERMISSIONSCOPE_SPOTIFY}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}`}>
-                Login to Spotify
+                <Button> Login to Spotify</Button>
               </a>
               : <Button onClick={logout}>Logout</Button>
           }

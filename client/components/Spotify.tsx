@@ -5,6 +5,7 @@ import axios from 'axios';
 import api from 'lib/api';
 import { SongRequest } from 'types';
 import QRCode from 'react-qr-code';
+import tokenRefresher from '../lib/tokenrefresher';
 
 
 import {
@@ -108,7 +109,13 @@ export default class Spotify extends React.Component<{}, State> {
                 q: artistName,
                 type: "track"
             }
-        })
+        }).catch(err =>{
+            console.log("FAIL!!!! --> axio.post call https://api.spotify.com/v1/search ", err.message);
+            if(err.response.data.error.status == 401 ){
+              tokenRefresher.refreshAccessToken(window.localStorage.getItem("refresh_token"));
+              this.searchArtists(e);
+            }
+        });
 
         this.setState({searchResults:data.tracks.items});
     }
@@ -223,6 +230,15 @@ export default class Spotify extends React.Component<{}, State> {
                     // invoice of songRequest
                     cardContent
                 }
+                {
+                  // when there's no access_token, we are not showin search section
+                (!window.localStorage.getItem("access_token") || window.localStorage.getItem("access_token") =="")  ?
+                
+                <Jumbotron>
+                  <h2 className="text-center">Not logged in yet?</h2>
+                  <p className="text-center">Let's try to hit that Login button first.</p>
+                </Jumbotron>
+                :
                 
                 <Form onSubmit={this.searchArtists}>
                 <h2>Search a song or album:</h2>
@@ -252,6 +268,8 @@ export default class Spotify extends React.Component<{}, State> {
                     
                     
                 </Form> 
+                
+                }
 
                 <>
                     <div className='tracks tracks--search'>
