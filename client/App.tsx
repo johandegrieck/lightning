@@ -5,7 +5,7 @@ import SpotifyLogin from 'components/SpotifyLogin';
 import SongRequests from 'components/SongRequests';
 import PlayerQueue from 'components/PlayerQueue';
 import SongCurrentlyPlaying from 'components/SongCurrentlyPlaying';
-import './App.scss';
+import './app.scss';
 
 export default class App extends React.Component {
   render() {
