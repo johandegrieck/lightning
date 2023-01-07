@@ -4,7 +4,7 @@
     "path": false,
     "os": false
   },
-  "name": "ln-sample-app",
+  "name": "ln-spotify-app",
   "version": "0.1.0",
   "engines": {
     "node": "14.17.6",
