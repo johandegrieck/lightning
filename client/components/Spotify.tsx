@@ -78,7 +78,7 @@ export default class Spotify extends React.Component<{}, State> {
 
     api.submitSongRequest(artistName, songUri, imageUrl, songName)
       .then(res => {
-        //console.log('submitSongRequest',res);
+        console.log('res.paymentRequest',res.paymentRequest);
         this.setState({
           uriParams: uriParams,
           isPosting: false,
