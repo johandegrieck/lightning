@@ -76,7 +76,7 @@ module.exports = {
   },
   plugins,
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.mjs', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.mjs', '.json','.scss'],
     modules: [clientDir, path.join(__dirname, '../node_modules')],
   },
   devServer: {
